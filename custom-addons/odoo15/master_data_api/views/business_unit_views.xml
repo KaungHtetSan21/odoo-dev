@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================ TREE VIEW ============================ -->
+    <record id="view_business_unit_tree" model="ir.ui.view">
+        <field name="name">business.unit.tree</field>
+        <field name="model">business.unit</field>
+        <field name="arch" type="xml">
+            <tree string="Business Units">
+                <field name="name" string="Corporate Information"/>
+                <field name="business_code"/>
+                <field name="business_type"/>
+                <field name="company_id"/>
+                <field name="bu_br_div_loc"/>
+                <field name="holding_business_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ============================ FORM VIEW ============================ -->
+    <record id="view_business_unit_form" model="ir.ui.view">
+        <field name="name">business.unit.form</field>
+        <field name="model">business.unit</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="eg. Corporate Information"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <field name="business_code"/>
+                        <field name="business_type"/>
+                        <field name="company_id"/>
+                        <field name="bu_br_div_loc"/>
+                        <field name="holding_business_id"/>
+                    </group>
+
+                </sheet>
+
+                <!-- Chatter -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================ SEARCH VIEW ============================ -->
+    <record id="view_business_unit_search" model="ir.ui.view">
+        <field name="name">business.unit.search</field>
+        <field name="model">business.unit</field>
+        <field name="arch" type="xml">
+            <search string="Search Business Units">
+                <field name="name" string="Corporate Information"/>
+                <field name="business_code"/>
+                <field name="business_type"/>
+                <field name="company_id"/>
+
+                <filter name="bu" string="BU" domain="[('business_type','=','bu')]"/>
+                <filter name="br" string="BR" domain="[('business_type','=','br')]"/>
+                <filter name="div" string="DIV" domain="[('business_type','=','div')]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_type" string="Type" context="{'group_by':'business_type'}"/>
+                    <filter name="group_by_company" string="Company" context="{'group_by':'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================ KANBAN VIEW ============================ -->
+    <record id="view_business_unit_kanban" model="ir.ui.view">
+        <field name="name">business.unit.kanban</field>
+        <field name="model">business.unit</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="business_code"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_title">
+                                <field name="name"/>
+                            </div>
+                            <div class="o_kanban_record_subtitle">
+                                <field name="business_code"/>
+                            </div>
+                            <div>
+                                <field name="business_type" widget="badge"/>
+                            </div>
+                            <div class="o_kanban_record_subtitle">
+                                <field name="company_id"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============================ ACTION ============================ -->
+    <record id="action_business_unit" model="ir.actions.act_window">
+        <field name="name">Business Units</field>
+        <field name="res_model">business.unit</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the Business Unit Master Data.
+            </p>
+        </field>
+    </record>
+
+</odoo>

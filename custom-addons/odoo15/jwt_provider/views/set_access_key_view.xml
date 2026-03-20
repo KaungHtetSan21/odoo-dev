@@ -1,0 +1,37 @@
+<odoo>
+    <record model="ir.ui.view" id="key_config_tree_view">
+        <field name="name">key.config.list</field>
+        <field name="model">key.config</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="id" />
+                <field name="access_key" />
+                <field name="refresh_key"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="key_config_form_view" model="ir.ui.view">
+        <field name="name">key.config.form</field>
+        <field name="model">key.config</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="id" />
+                        <field name="access_key" />
+                        <field name="refresh_key"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="key_config_action_window">
+        <field name="name">Key Config</field>
+        <field name="res_model">key.config</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="key_config_menu" name="Key Config" parent="group_menu_root" action="key_config_action_window" sequence="100" />
+</odoo>

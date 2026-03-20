@@ -1,0 +1,71 @@
+<odoo>
+  <data>
+
+    <record model="ir.ui.view" id="group_details_tree_view">
+      <field name="name">group.details.list</field>
+      <field name="model">group.details</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="group_name" />
+          <field name="group_email" />
+          <field name="group_phone" />
+          <field name="country_id" />
+          <field name="state_id" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="group_details_form_view" model="ir.ui.view">
+      <field name="name">group.details.form</field>
+      <field name="model">group.details</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <div class="oe_title">
+              <label for="group_name" string="Group Name" />
+              <h3>
+                <field name="group_name" placeholder="Enter The Group Name" />
+              </h3>
+            </div>
+            <group>
+              <group>
+                <field name="group_email" />
+                <field name="group_phone" />
+                <field name="group_api_key" widget="copyable" attrs="{'invisible': [('group_api_key', '=', False)]}"/>
+                <field name="group_api_user_password" password="True" widget="copyable"/>
+                <field name="related_user"/>
+              </group>
+              <group>
+                <label for="street" string="Address :" />
+                <div class="o_address_format">
+                  <field name="street" placeholder="Street..." class="o_address_street" />
+                  <field name="street2" placeholder="Street 2..." class="o_address_street" />
+                  <field name="city" placeholder="City" class="o_address_city" />
+                  <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}' />
+                  <field name="zip" placeholder="ZIP" class="o_address_zip" />
+                  <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}' />
+                </div>
+              </group>
+            </group>
+          </sheet>
+          <div class="oe_chatter">
+            <field name="message_follower_ids" widget="mail_followers" />
+            <field name="activity_ids" widget="mail_activity" />
+            <field name="message_ids" widget="mail_thread" />
+          </div>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="group_action_window">
+      <field name="name">Groups</field>
+      <field name="res_model">group.details</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Group" id="group_menu_root" sequence="2" />
+
+    <menuitem name="Groups" id="group_details_list" parent="group_menu_root" action="group_action_window" sequence="1" />
+  
+  </data>
+</odoo>

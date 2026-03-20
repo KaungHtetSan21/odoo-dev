@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Root Menu -->
+    <menuitem id="menu_master_data_root"
+              name="Master Data"
+              sequence="1"/>
+
+    <!-- Business Unit Menu -->
+    <menuitem id="menu_business_unit_root"
+              name="Business Units"
+              parent="menu_master_data_root"
+              action="action_business_unit"
+              sequence="1"/>
+
+</odoo>

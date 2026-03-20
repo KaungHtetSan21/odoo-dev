@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_jwt_access_token,Read jwt access token,model_jwt_provider_access_token,base.group_user,1,1,0,1
+access_jwt_refresh_token,Read jwt refresh token,model_jwt_provider_refresh_token,base.group_user,1,1,0,1
+access_group_details,Read group details,model_group_details,,1,1,1,1
+access_key_config,Read key config,model_key_config,base.group_user,1,1,1,1
