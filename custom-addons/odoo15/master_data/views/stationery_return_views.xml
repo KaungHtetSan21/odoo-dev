@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_stationery_return_tree" model="ir.ui.view">
+        <field name="name">stationery.return.tree</field>
+        <field name="model">stationery.return</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="return_date"/>
+                <field name="from_department_id"/>
+                <field name="to_department_id"/>
+                <field name="state" widget="badge"/>
+                <field name="total_products"/>
+                <field name="total_qty"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_stationery_return_form" model="ir.ui.view">
+        <field name="name">stationery.return.form</field>
+        <field name="model">stationery.return</field>
+        <field name="arch" type="xml">
+            <form string="Stationery Return">
+                
+                <header>
+                    <button name="action_submit"
+                            string="Submit"
+                            type="object"
+                            class="btn-primary"
+                            attrs="{'invisible': [('state','!=','draft')]}"/>
+                    
+                    <button name="action_approve"
+                            string="Approve"
+                            type="object"
+                            class="btn-success"
+                            attrs="{'invisible': [('state','!=','submitted')]}"/>
+                    
+                    <button name="action_reject"
+                            string="Reject"
+                            type="object"
+                            class="btn-danger"
+                            attrs="{'invisible': [('state','!=','submitted')]}"/>
+                    
+                    <field name="state" widget="statusbar"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <!-- <button name="action_view_transfer"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-truck"
+                                attrs="{'invisible': [('picking_id','=',False)]}">
+                            <div class="o_stat_info">
+                                <field name="picking_id" widget="statinfo"/>
+                                <span class="o_stat_text">View Transfer</span>
+                            </div>
+                        </button> -->
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="return_date"/>
+                            <field name="operation_type"/>
+                        </group>
+
+                        <group>
+                            <field name="total_products" widget="statinfo"/>
+                            <field name="total_qty" widget="statinfo"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Return Details">
+                        <group>
+                            <field name="from_department_id" 
+                                   options="{'no_create': True}"
+                                   placeholder="Select source department"/>
+                            <field name="from_location_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Source location"/>
+                            <field name="remark" 
+                                   placeholder="Enter remark..."
+                                   widget="textarea"/>
+                        </group>
+                        
+                        <group>
+                            <field name="to_department_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Select destination department"/>
+                            <field name="to_location_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Destination location"/>
+                            <field name="ga_pic_feedback"
+                                   placeholder="GA feedback..."
+                                   widget="textarea"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Products">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="return_qty"/>
+                                    <field name="uom_id"/>
+                                    <field name="remark"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <page string="Transfer Info" 
+                            attrs="{'invisible': [('picking_id','=',False)]}">
+                            <group>
+                                <field name="source_transfer_id" string="Source Transfer"/>
+                                <field name="picking_id" string="Return Transfer"/>
+                            </group>
+                            <separator string="Products"/>
+                            <field name="picking_move_ids" readonly="1">
+                                <tree>
+                                    <field name="product_id"/>
+                                    <field name="product_uom_qty" string="Demand"/>
+                                    <field name="quantity_done" string="Delivered"/>
+                                    <field name="product_uom" string="UoM"/>
+                                    <field name="state" widget="badge"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+                
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_stationery_return_search" model="ir.ui.view">
+        <field name="name">stationery.return.search</field>
+        <field name="model">stationery.return</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="from_department_id"/>
+                <field name="to_department_id"/>
+                
+                <filter name="filter_draft" 
+                        string="Draft"
+                        domain="[('state','=','draft')]"/>
+                <filter name="filter_submitted" 
+                        string="Submitted"
+                        domain="[('state','=','submitted')]"/>
+                <filter name="filter_approved" 
+                        string="Approved"
+                        domain="[('state','=','approved')]"/>
+                <filter name="filter_done" 
+                        string="Done"
+                        domain="[('state','=','done')]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter name="group_from_dept" 
+                            string="From Department"
+                            context="{'group_by':'from_department_id'}"/>
+                    <filter name="group_to_dept" 
+                            string="To Department"
+                            context="{'group_by':'to_department_id'}"/>
+                    <filter name="group_state" 
+                            string="State"
+                            context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+
+    <!-- Action for Stationery Returns -->
+    <record id="action_stationery_return" model="ir.actions.act_window">
+        <field name="name">Stationery Returns</field>
+        <field name="res_model">stationery.return</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first stationery return
+            </p>
+        </field>
+    </record>
+
+    <!-- <menuitem id="menu_stationery_return"
+            name="Stationery Returns"
+            parent="menu_stationary_internal"
+            action="action_stationery_return"
+            sequence="51"/> -->
+
+
+
+</odoo>

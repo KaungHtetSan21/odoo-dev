@@ -1,16 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Root Menu -->
-    <menuitem id="menu_master_data_root"
-              name="Master Data"
-              sequence="1"/>
+    <!-- ============================================================ -->
+    <!-- MAIN STATIONERY MENU (ROOT) -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_stationery_root"
+              name="Stationery"
+              sequence="10"
+              web_icon="stationery,static/description/icon.png"/>
 
-    <!-- Business Unit Menu -->
+    <!-- ============================================================ -->
+    <!-- MASTER DATA MENU (Business Units, Products, Vendors) -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_stationery_master_data"
+              name="Master Data"
+              parent="menu_stationery_root"
+              sequence="10"/>
+
+    <!-- Business Units -->
     <menuitem id="menu_business_unit_root"
               name="Business Units"
-              parent="menu_master_data_root"
+              parent="menu_stationery_master_data"
               action="action_business_unit"
-              sequence="1"/>
+              sequence="10"/>
+
+    <!-- Products -->
+    <menuitem id="menu_stationary_products"
+              name="Products"
+              parent="menu_stationery_master_data"
+              sequence="20"/>
+
+    <menuitem id="menu_stationary_product_templates"
+              name="Stationery Products"
+              parent="menu_stationary_products"
+              action="action_stationery_product_template"
+              sequence="10"/>
+
+    <menuitem id="menu_stationary_product_variants"
+              name="Product Variants"
+              parent="menu_stationary_products"
+              action="product.product_normal_action"
+              sequence="20"/>
+
+    <!-- Vendors (Purchase Related) -->
+    <menuitem id="menu_stationery_purchase_vendor"
+              name="Vendors"
+              parent="menu_stationery_master_data"
+              action="action_stationery_vendor"
+              sequence="30"/>
+
+    <!-- ============================================================ -->
+    <!-- INTERNAL OPERATIONS MENU (Requests, Transfers, Returns, Issues) -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_stationary_internal"
+              name="Internal Operations"
+              parent="menu_stationery_root"
+              sequence="20"/>
+
+    <!-- Stationery Requests -->
+    <menuitem id="menu_stationery_requests"
+              name="Stationery Requests"
+              parent="menu_stationary_internal"
+              action="action_stationery_request"
+              sequence="10"/>
+
+    <!-- Internal Transfers -->
+    <menuitem id="menu_transfer"
+              name="Internal Transfers"
+              parent="menu_stationary_internal"
+              action="action_stationery_transfer"
+              sequence="20"/>
+
+    <!-- Stationery Returns -->
+    <menuitem id="menu_stationery_return"
+              name="Stationery Returns"
+              parent="menu_stationary_internal"
+              action="action_stationery_return"
+              sequence="30"/>
+
+    <!-- Internal Issue Requests -->
+    <menuitem id="menu_internal_issue_request"
+              name="Issue Requests"
+              parent="menu_stationary_internal"
+              action="action_internal_issue_request"
+              sequence="40"/>
+
+    <!-- Office Stock Report -->
+    <menuitem id="menu_office_stock"
+              name="Office Stock"
+              parent="menu_stationary_internal"
+              action="action_office_stock_report"
+              sequence="50"/>
+
+    <!-- ============================================================ -->
+    <!-- PURCHASE MENU (RFQ, Purchase Orders) -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_stationery_order"
+              name="Purchase"
+              parent="menu_stationery_root"
+              sequence="30"/>
+
+    <!-- Request for Quotation -->
+    <menuitem id="menu_stationery_purchase_rfq"
+              name="Request for Quotation"
+              parent="menu_stationery_order"
+              action="purchase.purchase_rfq"
+              sequence="10"/>
+
+    <!-- Purchase Orders -->
+    <menuitem id="menu_stationery_purchase_order_list"
+              name="Purchase Orders"
+              parent="menu_stationery_order"
+              action="purchase.purchase_form_action"
+              sequence="20"/>
 
 </odoo>
+

@@ -1,0 +1,8 @@
+<odoo>
+    <record id="seq_stationery_return" model="ir.sequence">
+        <field name="name">Stationery Return</field>
+        <field name="code">stationery.return</field>
+        <field name="prefix">RET/</field>
+        <field name="padding">5</field>
+    </record>
+</odoo>

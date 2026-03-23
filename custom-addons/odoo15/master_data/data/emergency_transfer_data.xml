@@ -1,0 +1,44 @@
+<odoo>
+
+    <!-- Company A -->
+    <record id="seq_internal_issue_company_a" model="ir.sequence">
+        <field name="name">Internal Issue - Company A</field>
+        <field name="code">internal.issue.request</field>
+        <field name="prefix">IRA/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+    <!-- Global fallback -->
+    <record id="seq_internal_issue_global" model="ir.sequence">
+        <field name="name">Internal Issue - Global</field>
+        <field name="code">internal.issue.request</field>
+        <field name="prefix">IR/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="stock_picking_type_emergency" model="stock.picking.type">
+        <field name="name">Emergency Transfer</field>
+        <field name="sequence_code">EMG</field>
+        <field name="sequence">100</field>
+        <field name="code">internal</field>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="default_location_src_id" ref="stock.stock_location_stock"/>
+        <field name="default_location_dest_id" ref="stock.stock_location_stock"/>
+        <field name="color">3</field>
+    </record>
+    
+    <!-- ✅ Stationery Return Picking Type -->
+    <record id="stock_picking_type_stationery_return" model="stock.picking.type">
+        <field name="name">Stationery Return</field>
+        <field name="sequence_code">RET</field>
+        <field name="sequence">110</field>
+        <field name="code">internal</field>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="default_location_src_id" ref="stock.stock_location_stock"/>
+        <field name="default_location_dest_id" ref="stock.stock_location_stock"/>
+        <field name="color">4</field>
+    </record>
+
+</odoo>

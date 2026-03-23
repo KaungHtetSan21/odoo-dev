@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ========================
+             Product Form View
+             Add office buttons in header
+        ========================= -->
+        <!-- <record id="product_form_inherit_office_statusbar" model="ir.ui.view">
+            <field name="name">product.product.form.office.statusbar</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button type="object"
+                            name="action_open_office_issued"
+                            class="oe_stat_button"
+                            icon="fa-cube">
+                        <field name="office_issued_qty" widget="statinfo" options="{'clickable': True}" />
+                    </button>
+
+                    <button type="object"
+                            name="action_open_office_remaining"
+                            class="oe_stat_button"
+                            icon="fa-cubes">
+                        <field name="office_remaining_qty" widget="statinfo" options="{'clickable': True}" />
+                    </button>
+                </xpath>
+            </field>
+        </record> -->
+
+
+        <record id="product_product_form_inherit_office_stat" model="ir.ui.view">
+            <field name="name">product.product.form.inherit.office.stat</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button type="object"
+                            name="action_open_office_issued"
+                            class="oe_stat_button"
+                            icon="fa-cube">
+                        <field name="office_issued_qty" widget="statinfo" options="{'clickable': True}" />
+                    </button>
+
+                    <button type="object"
+                            name="action_open_office_remaining"
+                            class="oe_stat_button"
+                            icon="fa-cubes">
+                        <field name="office_remaining_qty" widget="statinfo" options="{'clickable': True}" />
+                    </button>
+
+                    
+                </xpath>
+
+                <!-- Hide Extra Price Button -->
+                <xpath expr="//button[@name='open_pricelist_rules']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <!-- Hide Extra Price Button -->
+                <xpath expr="//button[@name='action_view_related_putaway_rules']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+
+            </field>
+        </record>
+
+
+        <!-- ========================
+             Product Tree View
+             Add office stock + location
+        ========================= -->
+        <record id="view_product_product_tree_inherit_office" model="ir.ui.view">
+            <field name="name">product.product.tree.office.stock</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+
+                <!-- Remove default qty_available -->
+                <xpath expr="//field[@name='qty_available']" position="replace"/>
+
+                <!-- Insert our fields after default_code -->
+                <xpath expr="//field[@name='default_code']" position="after">     
+                    <field name="qty_available" string="On Hand"/>
+                    <field name="office_issued_qty" string="Issued Quantity"/>
+                    <field name="office_remaining_qty" string="Available Quantity"/>
+                    <field name="uom_id"/>
+                    <field name="value_svl" string="Value"/>
+                    <field name="company_id"/>
+                </xpath>
+
+                <!-- Hide unnecessary fields -->
+                <xpath expr="//field[@name='lst_price']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='standard_price']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='virtual_available']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- <menuitem id="menu_stationary_product_variants"
+                name="Product Variants"
+                parent="menu_stationary_products"
+                action="product.product_normal_action"
+                sequence="2"/> -->
+
+       
+
+    </data>
+</odoo>

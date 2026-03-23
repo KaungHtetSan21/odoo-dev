@@ -1,0 +1,207 @@
+<odoo>
+    <record id="purchase_order_stationery_view_hide_fields" model="ir.ui.view"> 
+        <field name="name">purchase.order.stationery.hide.fields</field> 
+        <field name="model">purchase.order</field> 
+        <field name="inherit_id" ref="purchase.purchase_order_form"/> 
+        <field name="arch" type="xml">
+
+            
+            <!-- Hide the whole group that contains partner_id -->
+            <xpath expr="//field[@name='partner_id']/ancestor::group[1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <!-- Replace default state widget -->
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="widget">statusbar</attribute>
+                <attribute name="statusbar_visible">
+                    draft,purchase,done
+                </attribute>
+            </xpath>
+
+
+
+            <!-- Hide the second inner group completely (dates, reminders, etc.) -->
+            <xpath expr="//field[@name='partner_id']/ancestor::group[2]/group[2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+
+            <xpath expr="//field[@name='partner_id']/ancestor::group[2]" position="after">
+
+                <field name="ask_approval" invisible="1"/>
+                <field name="manager_approved" invisible="1"/>
+                
+                
+                <group>
+                    <!-- Purchase Request Info -->
+                    <group string="Purchase Request Info">
+                        <field name="partner_id"/>
+                        <field name="currency_id"/>
+                        <field name="purchase_request_date" attrs="{'readonly':[('manager_approved','=',True)]}"/>
+                        <field name="requester_name" attrs="{'readonly':[('manager_approved','=',True)]}"/>
+                        <field name="holding_business" attrs="{'readonly':[('manager_approved','=',True)]}"/>
+                        <field name="office_location_id"/>
+                        
+                        <field name="total_purchase_amount" readonly="1"/>
+                        <field name="remark" attrs="{'readonly':[('manager_approved','=',True)]}"/>
+                    </group>
+
+
+                    <!-- Approval section: only visible after ask_approval = True -->
+                    <group string="Approval"
+                        attrs="{'invisible': [('ask_approval','=',False)]}">
+                        <field name="approve_by"  attrs="{'readonly':[('manager_approved','=',True)]}"/>
+                        <field name="purchase_approve_date" attrs="{'readonly':[('manager_approved','=',True)]}"/>
+                        <field name="manager_remark" widget="text" attrs="{'readonly':[('manager_approved','=',True)]}"/>
+                        <field name="management_approval" widget="image" options="{'size':[100,100]}" attrs="{'readonly':[('manager_approved','=',True)]}"/>
+
+                        
+                    </group>
+                </group>
+                <!-- Decline Info -->
+                <group string="Decline Information"
+                    style="background-color:#f8d7da; border:1px solid #f5c6cb; padding:10px; border-radius:5px;"
+                    attrs="{'invisible':[('state','!=','denied')]}">
+                    
+                    <group class="oe_red oe_rounded" col="2">
+                        <field name="declined_by" options="{'no_open': True}" string="Declined By"/>
+                        <field name="declined_date"/>
+                    </group>
+
+                    <field name="decline_reason" string="Reason" readonly="1"/>
+                    <field name="decline_reason_note"
+                        attrs="{'invisible':[('decline_reason','!=','other')]}"/>
+                </group>
+             
+            </xpath>
+
+            <xpath expr="//button[@name='action_rfq_send']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_confirm']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': [('state', 'not in', ('approved'))]}
+                </attribute>
+            </xpath>
+
+            <!-- Add Request Confirmation button -->
+            <xpath expr="//header" position="inside">
+                <button name="button_set_to_draft"
+                        string="Update PO"
+                        type="object"
+                        states="denied"
+                        class="oe_highlight"/>
+                <button name="button_request_confirmation"
+                        string="Request Confirmation"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state','not in', ('draft','sent'))]}"/>
+                <button name="button_manager_confirm_order"
+                        string="Manager Confirm"
+                        type="object"
+                        class="oe_highlight"
+                        groups="purchase.group_purchase_manager"
+                        states="waiting_confirmation"
+                        attrs="{'invisible':[('state','!=','waiting_confirmation')]}"/>
+                <button name="action_open_decline_wizard"
+                        string="Decline"
+                        type="object"
+                        class="btn-danger"
+                        groups="purchase.group_purchase_manager"
+                        states="waiting_confirmation"/>
+                            </xpath>
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible">
+                    draft,purchase,done
+                </attribute>
+            </xpath>           
+            
+
+            <!-- <xpath expr="//button[@name='action_view_picking']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath> -->
+
+            <xpath expr="//field[@name='product_qty']" position="after">
+                <field name="office_remaining_qty" string="Available Qty" readonly="1"/>
+            </xpath>
+
+
+        </field>
+    </record>
+
+    <record id="view_purchase_decline_wizard_form" model="ir.ui.view">
+        <field name="name">purchase.decline.wizard.form</field>
+        <field name="model">purchase.decline.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Decline Purchase Order">
+                <group>
+                    <field name="decline_reason" widget="radio"/>
+                    <field name="decline_reason_note"
+                        attrs="{'invisible':[('decline_reason','!=','other')],
+                                'required':[('decline_reason','=','other')]}"/>
+                </group>
+                <footer>
+                    <button name="action_confirm_decline"
+                            string="Confirm"
+                            type="object"
+                            class="btn-danger"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+<!-- 
+    <record id="purchase_order_form_inherit_confirm" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.confirm</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//button[@name='button_confirm']" position="attributes">
+                <attribute name="states">draft,sent,approved</attribute>
+            </xpath>
+
+        </field>
+    </record> -->
+
+    <!-- <menuitem id="menu_stationery_purchase_rfq"
+          name="Request for Quotation"
+          parent="menu_stationery_order"
+          action="purchase.purchase_rfq"
+          sequence="1"/>
+
+    <menuitem id="menu_stationery_purchase_order_list"
+        name="Purchase Order"
+        parent="menu_stationery_order"
+        action="purchase.purchase_form_action"
+        sequence="2"/> -->
+
+
+    <!-- ========================= -->
+    <!-- Vendor Action -->
+    <!-- ========================= -->
+    <record id="action_stationery_vendor" model="ir.actions.act_window">
+        <field name="name">Vendors</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <!-- Show only Vendors -->
+        <field name="domain">[('supplier_rank','>',0)]</field>
+        <!-- When creating, default as vendor -->
+        <field name="context">{'default_supplier_rank': 1}</field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- Vendor Menu -->
+    <!-- ========================= -->
+    <!-- <menuitem id="menu_stationery_purchase_vendor"
+              name="Vendors"
+              parent="menu_stationery_order"
+              action="action_stationery_vendor"
+              sequence="3"/> -->
+
+    
+
+</odoo>

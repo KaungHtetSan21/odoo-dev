@@ -1,0 +1,10 @@
+<odoo>
+    <record id="stationary_internal_transfer_action" model="ir.actions.act_window">
+        <field name="name">Stationary Internal Transfers</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[
+            ('picking_type_id.code','=','internal')
+        ]</field>
+    </record>
+</odoo>

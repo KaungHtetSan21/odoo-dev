@@ -1,0 +1,9 @@
+<odoo>
+    <record id="seq_internal_issue_request" model="ir.sequence">
+        <field name="name">Internal Issue Request</field>
+        <field name="code">internal.issue.request</field>
+        <field name="prefix">IR/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

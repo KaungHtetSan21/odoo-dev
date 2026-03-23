@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================= -->
+    <!-- Form View -->
+    <!-- ========================= -->
+    <record id="view_internal_issue_form" model="ir.ui.view">
+        <field name="name">internal.issue.request.form</field>
+        <field name="model">internal.issue.request</field>
+        <field name="arch" type="xml">
+            <form string="Internal Issue Request">
+                <header>
+                    <button name="action_submit"
+                            string="Submit"
+                            type="object"
+                            states="draft"
+                            class="oe_highlight"/>
+
+                    <button name="action_approve"
+                            string="Approve"
+                            type="object"
+                            states="submitted"
+                            groups="purchase.group_purchase_manager"
+                            class="oe_highlight"/>
+
+                    <button name="action_reset_draft"
+                            string="Reset to Draft"
+                            type="object"
+                            states="submitted,approved"/>
+
+                    <field name="state" widget="statusbar"/>
+                </header>
+
+                <sheet>
+                    <!-- Sequence / Request Reference on top -->
+                    <group>
+                        <field name="name" readonly="1" class="o_field_char o_field_name o_field_sequence"
+                            style="font-size:30px; font-weight:600;" nolabel="1"/>
+                    </group>
+
+                    <!-- Rest of the form fields -->
+                    <group>
+                        <group>
+                            <field name="company_id"/>
+                            <field name="issue_date"/>
+                        </group>
+
+                        <group>
+                            <field name="picking_type_id"/>
+                            <field name="warehouse_id"/>
+                            <field name="office_location_id"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <field name="issue_photo" widget="image" class="oe_avatar"/>
+                        <field name="remark"/>
+                    </group>
+
+                    <field name="line_ids">
+                        <tree editable="bottom">
+                            <field name="product_id"/>
+                            <field name="remaining_qty" readonly="1"/>
+                            <field name="issue_qty"/>
+                            <field name="uom_id"/>
+                            <field name="department"/>
+                            <field name="received_by"/>
+                            <field name="remark"/>
+                        </tree>
+                    </field>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- Tree View (FIXED) -->
+    <!-- ========================= -->
+    <record id="view_internal_issue_tree" model="ir.ui.view">
+        <field name="name">internal.issue.request.tree</field>
+        <field name="model">internal.issue.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="issue_date"/>
+                <field name="office_location_id"/>
+                <field name="warehouse_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <!-- ========================= -->
+    <!-- Action -->
+    <!-- ========================= -->
+    <record id="action_internal_issue_request" model="ir.actions.act_window">
+        <field name="name">Internal Issue Requests</field>
+        <field name="res_model">internal.issue.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- Menu -->
+    <!-- ========================= -->
+    <!-- <menuitem id="menu_internal_issue_root"
+              name="Internal Requests"
+              parent="stock.menu_stock_root"
+              sequence="30"/> -->
+
+    <!-- <menuitem id="menu_internal_issue_request"
+              name="Issue Requests"
+              parent="menu_stationary_internal"
+              action="action_internal_issue_request"
+              sequence="10"/> -->
+
+</odoo>

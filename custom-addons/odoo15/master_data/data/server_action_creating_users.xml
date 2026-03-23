@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+        <record id="action_create_users_from_employees" model="ir.actions.server">
+            <field name="name">Create Users From Employees</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="binding_model_id" ref="hr.model_hr_employee"/>
+            <field name="binding_type">action</field>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+# Run for all employees
+for employee in env['hr.employee'].search([]):
+    if not employee.user_id and employee.work_email:
+        user = env['res.users'].create({
+            'name': employee.name,
+            'login': employee.work_email,
+            'email': employee.work_email,
+            'groups_id': [(6, 0, [env.ref('base.group_user').id])]
+        })
+        employee.write({'user_id': user.id})
+]]></field>
+        </record>
+    </data>
+</odoo>

@@ -1,2 +1,13 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_business_unit_user,business.unit.user,model_business_unit,,1,1,1,1
+
+access_requests_user,stationery.request.user,model_stationery_request,,1,1,1,1
+access_request_lines_user,stationery.request.line.user,model_stationery_request_line,,1,1,1,1
+access_return_user,stationery.return.user,model_stationery_return,,1,1,1,1
+access_return_line_user,stationery.return.line.user,model_stationery_return_line,,1,1,1,1
+access_request_reject_wizard_user,stationery.request.reject.wizard.user,model_stationery_request_reject_wizard,,1,1,1,1
+access_transfer_reject_wizard_user,stationery.transfer.reject.wizard.user,model_stationery_transfer_reject_wizard,,1,1,1,1
+
+access_purchase_decline_wizard_user,stationery_purchase.decline.wizard.user,model_purchase_decline_wizard,,1,1,1,1
+access_internal_issue_request_user,stationery_internal.issue.request.user,model_internal_issue_request,,1,1,1
+access_internal_issue_request_line_user,stationery_internal.issue.request.line.user,model_internal_issue_request_line,,1,1,1

@@ -1,0 +1,29 @@
+<odoo>
+    <template id="report_replenishment_header_inherit_custom"
+              inherit_id="stock.report_replenishment_header">
+
+        <xpath expr="//div[contains(@class,'o_report_stock_forecasted_summary')]" position="inside">
+
+            <!-- Issued Qty -->
+            <div class="o_report_stock_forecasted_summary_section">
+                <div class="o_report_stock_forecasted_summary_title">
+                    Issued Qty
+                </div>
+                <div class="o_report_stock_forecasted_summary_value">
+                    <t t-esc="product.office_issued_qty"/>
+                </div>
+            </div>
+
+            <!-- Remaining Qty -->
+            <div class="o_report_stock_forecasted_summary_section">
+                <div class="o_report_stock_forecasted_summary_title">
+                    Remaining Qty
+                </div>
+                <div class="o_report_stock_forecasted_summary_value">
+                    <t t-esc="product.office_remaining_qty"/>
+                </div>
+            </div>
+
+        </xpath>
+    </template>
+</odoo>

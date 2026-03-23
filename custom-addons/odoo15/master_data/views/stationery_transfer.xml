@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ===================================================== -->
+    <!-- Tree View for Stationery Transfers (with Scheduled Date) -->
+    <!-- ===================================================== -->
+    <record id="view_stationery_transfer_tree" model="ir.ui.view">
+        <field name="name">stationery.transfer.tree</field>
+        <field name="model">stock.picking</field>
+        <field name="arch" type="xml">
+            <tree string="Stationery Transfers" default_order="scheduled_date desc">
+                <field name="name" string="Reference"/>
+                <field name="location_id" string="From"/>
+                <field name="location_dest_id" string="To"/>
+                <field name="partner_id" string="Contact"/>
+                <field name="scheduled_date" string="Scheduled Date"/>
+                <field name="origin" string="Source Document"/>
+                <field name="company_id" string="Company"/>
+                <!-- Hide original state in tree view -->
+                <field name="state" invisible="1"/>
+                <field name="approval_state" string="Status" widget="badge"
+                       decoration-success="approval_state in ('approved','done')"
+                       decoration-warning="approval_state in ('submitted','transferred')"
+                       decoration-danger="approval_state=='rejected'"
+                       decoration-info="approval_state=='draft'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--________________Stationery Picking Form_______________ -->
+    <record id="view_stock_picking_stationery_form" model="ir.ui.view">
+        <field name="name">stock.picking.stationery.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+
+            <!-- ================= HIDDEN REQUIRED FIELDS ================= -->
+            <xpath expr="//form" position="inside">
+                <field name="scheduled_date" invisible="1"/>
+                <field name="date_deadline" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="picking_type_id" invisible="1"/>
+                <field name="state" invisible="1"/>
+            </xpath>
+
+            <!-- ================= HIDE ALL DEFAULT BUTTONS ================= -->
+            <!-- Hide Mark as Todo button -->
+            <xpath expr="//header/button[@name='action_confirm']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide Check Availability button -->
+            <xpath expr="//header/button[@name='action_assign']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide Validate button -->
+            <xpath expr="//header/button[@name='button_validate']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide Set Quantities button -->
+            <xpath expr="//header/button[@name='action_set_quantities_to_reservation']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide Clear Quantities button -->
+            <!-- <xpath expr="//header/button[@name='action_clear_quantities_to_zero']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath> -->
+
+            <!-- Hide Return button (action ID 210) -->
+<!--            <xpath expr="//header/button[@name='action_return']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+
+            <!-- Hide Unreserve button -->
+            <xpath expr="//header/button[@name='do_unreserve']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide Cancel button -->
+            <xpath expr="//header/button[@name='action_cancel']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide Unlock/Lock button -->
+            <xpath expr="//header/button[@name='action_toggle_is_locked']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- ================= BUTTONS TO KEEP VISIBLE ================= -->
+            <!-- Print Labels button - KEEP VISIBLE -->
+            <!-- Print button (for done state) - KEEP VISIBLE -->
+            <!-- Scrap button - KEEP VISIBLE -->
+
+            <!-- ================= HEADER ================= -->
+            <xpath expr="//header" position="inside">
+
+                <!-- REQUIRED FIELDS FOR ATTRS -->
+                <field name="approval_state" invisible="1"/>
+                <field name="is_stationery_transfer" invisible="1"/>
+                <field name="is_gm_approved" invisible="1"/>
+                <field name="reject_reason" invisible="1"/>
+
+                <!-- SUBMIT BUTTON - Only visible in Draft state -->
+                <button name="action_submit"
+                        string="Submit"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [
+                            '|',
+                            ('is_stationery_transfer','=',False),
+                            ('approval_state','!=','draft')
+                        ]}"/>
+
+                <!-- GM APPROVE BUTTON - Only visible in Submitted state -->
+                <button name="action_gm_approve"
+                        string="GM Approve"
+                        type="object"
+                        class="btn-success"
+                        attrs="{'invisible': [
+                            '|',
+                            ('is_stationery_transfer','=',False),
+                            ('approval_state','!=','submitted')
+                        ]}"/>
+
+                <!-- REJECT BUTTON - Only visible in Submitted state -->
+                <button name="%(action_stationery_reject_wizard)d"
+                        string="Reject"
+                        type="action"
+                        class="btn-danger"
+                        attrs="{'invisible': [
+                            '|',
+                            ('is_stationery_transfer','=',False),
+                            ('approval_state','!=','submitted')
+                        ]}"
+                        context="{'default_picking_id': active_id}"/>
+
+                <!-- CANCEL BUTTON - Visible in Submitted and Approved states -->
+                <button name="action_cancel_transfer"
+                        string="Cancel"
+                        type="object"
+                        class="btn-secondary"
+                        attrs="{'invisible': [
+                            '|',
+                            ('is_stationery_transfer','=',False),
+                            ('approval_state','not in', ('submitted', 'approved'))
+                        ]}"/>
+
+                <!-- RESET TO DRAFT BUTTON - Only visible in Cancelled state -->
+                <button name="action_reset_to_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [
+                            '|',
+                            ('is_stationery_transfer','=',False),
+                            ('approval_state','!=','cancelled')
+                        ]}"/>
+
+                <!-- TRANSFER BUTTON - Only visible in Approved state -->
+                <button name="action_transfer_stationery"
+                        string="Transfer"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [
+                            '|',
+                            ('is_stationery_transfer','=',False),
+                            ('approval_state','!=','approved')
+                        ]}"/>
+
+                <!-- Custom Statusbar - Add cancelled state -->
+                <field name="approval_state"
+                    widget="statusbar"
+                    statusbar_visible="draft,submitted,approved,rejected,cancelled,transferred,done"
+                    attrs="{'invisible':[('is_stationery_transfer','=',False)]}"/>
+
+            </xpath>
+
+            <!-- Remove original state field -->
+            <xpath expr="//field[@name='state']" position="replace"/>
+
+            <!-- ================= BUTTON BOX ================= -->
+            <!-- Hide Operations button in button box -->
+            <xpath expr="//div[@name='button_box']/button[@name='action_picking_move_tree']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <!-- Hide Scraps button -->
+            <xpath expr="//div[@name='button_box']/button[@name='action_see_move_scrap']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <!-- Hide Packages button -->
+            <xpath expr="//div[@name='button_box']/button[@name='action_see_packages']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <!-- Hide Traceability button (action ID 189) -->
+<!--            <xpath expr="//div[@name='button_box']/button[@name='action_traceability']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+            
+            <!-- Hide Allocation button -->
+            <xpath expr="//div[@name='button_box']/button[@name='action_view_reception_report']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <!-- Hide default valuation button -->
+            <xpath expr="//div[@name='button_box']/button[@name='action_view_stock_valuation_layers']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                
+                <!-- YOUR CUSTOM BUTTONS -->
+                <button name="action_check_department_stock"
+                        string="Check Department Stock"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('is_stationery_transfer','=',False)]}"/>
+
+                <!-- View Request Button - Visible in transferred state -->
+                <button name="action_view_request"
+                        string="View Request"
+                        type="object"
+                        class="btn-info"
+                        icon="fa-eye"
+                        attrs="{'invisible': [
+                            '|',
+                            ('is_stationery_transfer','=',False),
+                            ('approval_state','!=','transferred')
+                        ]}"/>
+
+                <button class="oe_stat_button"
+                        icon="fa-times-circle"
+                        attrs="{'invisible': [('approval_state','!=','rejected')]}">
+                    <div class="o_stat_info">
+                        <field name="reject_reason" widget="statinfo"/>
+                        <span class="o_stat_text">Reject Reason</span>
+                    </div>
+                </button>
+                
+                <button name="action_create_purchase_order"
+                        string="Create Purchase Order"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-shopping-cart"
+                        attrs="{'invisible': [('is_stationery_transfer','=',False)]}">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Create PO</span>
+                    </div>
+                </button>
+
+                <button name="action_create_return"
+                        string="Create Return"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-undo"
+                        attrs="{'invisible': [('is_stationery_transfer','=',False)]}">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Create Return</span>
+                    </div>
+                </button>
+
+            </xpath>
+
+            <!-- ================= HIDE ORIGINAL HEADER GROUP ================= -->
+            <xpath expr="//sheet/group[1]" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_stationery_transfer','=',True)]}</attribute>
+            </xpath>
+
+            <!-- ================= STATIONERY HEADER ================= -->
+            <xpath expr="//sheet/group[1]" position="after">
+                <group string="Stationery Transfer"
+                    attrs="{'invisible':[('is_stationery_transfer','=',False)]}"
+                    col="2">
+
+                    <group>
+                        <field name="picking_type_id" options="{'no_create': True}" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                        <field name="from_department_id" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                        <field name="location_id" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                        <field name="scheduled_date" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                    </group>
+
+                    <group>
+                        <field name="origin" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                        <field name="to_department_id" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                        <field name="location_dest_id" string="Destinated Location" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                        <field name="transfer_type" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                        <field name="received_date" readonly="1"/>
+                        <field name="is_gm_approved" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                    </group>
+
+                    <group colspan="2">
+                        <field name="remark" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                    </group>
+
+                    <group colspan="2">
+                        <field name="ga_pic_feedback" 
+                            attrs="{'readonly': [('approval_state', 'not in', ('draft', 'submitted'))]}"/>
+                    </group>
+
+                </group>
+            </xpath>
+
+            <!-- ================= REJECTION TAB ================= -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Rejection Info"
+                      attrs="{'invisible':[('approval_state','!=','rejected')]}">
+                    <group>
+                        <field name="reject_reason" nolabel="1"/>
+                    </group>
+                </page>
+            </xpath>
+
+            <!-- Products Tree View -->
+            <xpath expr="//field[@name='move_ids_without_package']/tree" position="attributes">
+                <attribute name="editable">bottom</attribute>
+                <attribute name="create">approval_state == 'draft'</attribute>
+                <attribute name="delete">approval_state == 'draft'</attribute>
+            </xpath>
+
+            <!-- After product -->
+            <xpath expr="//field[@name='move_ids_without_package']/tree//field[@name='product_id']" position="after">
+                <field name="available_qty" readonly="1"/>
+            </xpath>
+
+            <!-- Make product_uom_qty readonly -->
+            <xpath expr="//field[@name='move_ids_without_package']/tree//field[@name='product_uom_qty']" position="replace">
+                <field name="product_uom_qty" attrs="{'readonly': [('parent.approval_state', 'not in', ('draft', 'submitted'))]}"/>
+            </xpath>
+
+            <!-- Make product_id readonly -->
+            <xpath expr="//field[@name='move_ids_without_package']/tree//field[@name='product_id']" position="replace">
+                <field name="product_id" attrs="{'readonly': [('parent.approval_state', 'not in', ('draft', 'submitted'))]}"/>
+            </xpath>
+
+            <!-- After UOM - Add line_remark -->
+            <xpath expr="//field[@name='move_ids_without_package']/tree//field[@name='product_uom']" position="after">
+                <field name="line_remark" attrs="{'readonly': [('parent.approval_state', 'not in', ('draft', 'submitted'))]}"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Action for Stationery Transfers -->
+    <record id="action_stationery_transfer" model="ir.actions.act_window">
+        <field name="name">Stationery Transfers</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_stationery_transfer','=',True)]</field>
+        <field name="context">{'default_is_stationery_transfer': True}</field>
+        <field name="view_id" ref="view_stationery_transfer_tree"/>
+    </record>
+
+    <!-- <menuitem id="menu_transfer"
+              name="Internal Transfer"
+              parent="menu_stationary_internal"
+              action="action_stationery_transfer"
+              sequence="21"/> -->
+
+</odoo>

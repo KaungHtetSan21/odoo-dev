@@ -1,0 +1,12 @@
+<odoo>
+    <record id="picking_type_internal_issue" model="stock.picking.type">
+        <field name="name">Internal Issue</field>
+        <field name="code">internal</field>
+        <field name="sequence_code">internal.issue.request</field>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="default_location_src_id" ref="stock.stock_location_stock"/>
+        <field name="default_location_dest_id" ref="stock.stock_location_stock"/>
+        <field name="sequence_id" ref="seq_internal_issue_request"/>
+        <field name="active">True</field>
+    </record>
+</odoo>
