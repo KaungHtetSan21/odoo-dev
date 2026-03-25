@@ -1,64 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-
 <odoo>
 
-
-    <!-- ______________________________Tree View___________________________________ -->
+    <!-- Tree View -->
     <record id="view_stationery_request_tree" model="ir.ui.view">
         <field name="name">stationery.request.tree</field>
         <field name="model">stationery.request</field>
         <field name="arch" type="xml">
-            <tree string="stationery Requests">
+            <tree string="Stationery Requests">
                 <field name="name" string="Reference"/>
                 <field name="request_date" string="Request Date"/>
-                <field name="requested_by" string="Requested By"/>
+                <field name="business_unit_id" string="Business Unit"/>
                 <field name="department_id" string="Department"/>
+                <field name="requested_by" string="Requested By"/>
                 <field name="state" widget="badge"
                     decoration-success="state == 'delivered'"
                     decoration-warning="state in ['draft', 'submitted']"
-                    decoration-info="state in ['approved', 'in_progress']"
+                    decoration-info="state == 'in_progress'"
+                    decoration-primary="state == 'approved'"
                     decoration-danger="state in ['rejected', 'cancelled']"/>
-                <field name="approved_by" string="Approved By"/>
             </tree>
         </field>
     </record>
 
-
-
-    <!-- ______________________________Form View___________________________________ -->
+    <!-- Form View (In Progress Workflow) -->
     <record id="view_stationery_request_form" model="ir.ui.view">
         <field name="name">stationery.request.form</field>
         <field name="model">stationery.request</field>
         <field name="arch" type="xml">
             <form>
-                <field name="readonly_state" invisible="1" attrs="{}"/>
+                <field name="readonly_state" invisible="1"/>
+                <field name="allowed_location_ids" invisible="1"/>
                 <header>
                     <button name="action_submit" type="object" string="Submit" class="btn-primary"
                             attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
                     <button name="action_approve" type="object" string="Approve" class="btn-success"
                             attrs="{'invisible': [('state', 'not in', ['submitted'])]}"
-                            confirm="Once approved, this request will become read-only. Do you want to continue?"/>
+                            confirm="Once approved, a transfer will be created. Do you want to continue?"/>
+                    <button name="action_mark_in_progress" type="object" string="Mark In Progress" class="btn-info"
+                            attrs="{'invisible': [('state', 'not in', ['approved'])]}"
+                            confirm="This will mark the request as In Progress and confirm the transfer. Continue?"/>
+                    <button name="action_mark_delivered" type="object" string="Mark Delivered" class="btn-success"
+                            attrs="{'invisible': [('state', 'not in', ['in_progress'])]}"/>
                     <button name="action_reject" type="object" string="Reject" class="btn-danger"
                             attrs="{'invisible': [('state', 'not in', ['submitted'])]}"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" class="btn-secondary"
-                            attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
-<!--                    <button name="action_mark_in_progress" type="object" string="Mark In Progress" class="btn-info"-->
-<!--                            confirm="This will mark delivered quantities as done. You can still adjust them manually later. Are you sure you want to continue?"-->
-<!--                            attrs="{'invisible': [('state', 'not in', ['approved'])]}"/>-->
-                    <button name="action_mark_delivered" type="object" string="Mark Delivered" class="btn-success"
-                            attrs="{'invisible': [('state', 'not in', ['in_progress'])]}"/>
+                            attrs="{'invisible': [('state', 'not in', ['rejected', 'cancelled'])]}"/>
                     <button name="action_cancel" type="object" string="Cancel" class="btn-secondary"
                             attrs="{'invisible': [('state', 'not in', ['draft', 'submitted'])]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,in_progress,delivered"/>
-
                 </header>
 
                 <sheet>
-
                     <div class="oe_button_box" name="button_box">
-                        <!-- Stat button for total items -->
                         <field name="picking_id" invisible="1"/>
                         <button name="action_view_transfer"
                             type="object"
@@ -67,11 +60,10 @@
                             icon="fa-truck"
                             attrs="{'invisible': [('picking_id','=',False)]}"/>
                         <button name="action_open_inventory_check"
-                                    type="object"
-                                    string="Check stock"
-                                    class="btn-secondary"
-                                    icon="fa-cubes"
-                                    />
+                            type="object"
+                            string="Check stock"
+                            class="btn-secondary"
+                            icon="fa-cubes"/>
                     </div>
 
                     <div class="oe_title">
@@ -82,14 +74,18 @@
 
                     <group>
                         <group>
-                            <field name="requested_by"/>
-                            <field name="contact"/>
-                            <field name="department_id" attrs="{'readonly': [('readonly_state', '=', True)]}" readonly="1"/>
-                            <field name="business_unit_ids" attrs="{'readonly': [('readonly_state', '=', True)]}" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True}"
-                                    readonly="1"/>
-                            <field name="allowed_location_ids" invisible="1"/>
-                            <field name="user_employee_department_id" invisible="1"/>
-                            <field name="stock_location_id" attrs="{'readonly': [('readonly_state', '=', True)]}"
+                            <field name="business_unit_id" 
+                                   options="{'no_create': True}"
+                                   attrs="{'readonly': [('readonly_state', '=', True)]}"/>
+                            <field name="department_id" 
+                                   options="{'no_create': True}"
+                                   attrs="{'readonly': [('readonly_state', '=', True)]}"/>
+                            <field name="requested_by" 
+                                   options="{'no_create': True}"
+                                   attrs="{'readonly': [('readonly_state', '=', True)]}"/>
+                            <field name="contact" readonly="1"/>
+                            <field name="stock_location_id" 
+                                   attrs="{'readonly': [('readonly_state', '=', True)]}"
                                    options="{'no_create': True}"/>
                             <field name="company_id" attrs="{'readonly': [('readonly_state', '=', True)]}"/>
                             <field name="request_date" attrs="{'readonly': [('readonly_state', '=', True)]}"/>
@@ -109,8 +105,8 @@
                         <page string="Items">
                             <field name="line_ids">
                                 <tree editable="bottom" create="1" delete="1" edit="1">
-                                    <field name = "request_state" invisible="1"/>
-                                     <field name="product_id"
+                                    <field name="request_state" invisible="1"/>
+                                    <field name="product_id"
                                            attrs="{'readonly': [('request_state', 'not in', ['draft','submitted'])]}"/>
                                     <field name="available_qty" readonly="1"/>
                                     <field name="quantity"
@@ -125,6 +121,15 @@
                         <page string="Notes">
                             <field name="notes" nolabel="1" attrs="{'readonly': [('readonly_state', '=', True)]}"/>
                         </page>
+                        
+                        <!-- Transfer Info Page - FIXED (picking_id.state ကိုဖျက်ထား) -->
+                        <page string="Transfer Info" 
+                              attrs="{'invisible': [('picking_id','=',False)]}">
+                            <group>
+                                <field name="picking_id" readonly="1" string="Transfer Reference"/>
+                                <!-- Transfer status ကိုသိချင်ရင် Transfer ကိုနှိပ်ပြီးကြည့်ပါ -->
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
 
@@ -133,26 +138,20 @@
                     <field name="activity_ids" widget="mail_activity"/>
                     <field name="message_ids" widget="mail_thread"/>
                 </div>
-
             </form>
         </field>
     </record>
 
-
-
-
-
-
-
-    <!-- ______________________________Search View___________________________________ -->
+    <!-- Search View -->
     <record id="view_stationery_request_search" model="ir.ui.view">
         <field name="name">stationery.request.search</field>
         <field name="model">stationery.request</field>
         <field name="arch" type="xml">
-            <search string="Search stationery Requests">
+            <search string="Search Stationery Requests">
                 <field name="name" string="Reference"/>
-                <field name="requested_by" string="Requested By"/>
+                <field name="business_unit_id" string="Business Unit"/>
                 <field name="department_id" string="Department"/>
+                <field name="requested_by" string="Requested By"/>
                 <filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
                 <filter name="submitted" string="Submitted" domain="[('state','=','submitted')]"/>
                 <filter name="approved" string="Approved" domain="[('state','=','approved')]"/>
@@ -160,18 +159,15 @@
                 <filter name="delivered" string="Delivered" domain="[('state','=','delivered')]"/>
                 <group expand="0" string="Group By">
                     <filter name="group_by_state" string="State" context="{'group_by':'state'}"/>
+                    <filter name="group_by_business_unit" string="Business Unit" context="{'group_by':'business_unit_id'}"/>
                     <filter name="group_by_department" string="Department" context="{'group_by':'department_id'}"/>
                     <filter name="group_by_requested_by" string="Requested By" context="{'group_by':'requested_by'}"/>
-                    <filter name="group_by_date" string="Request Date" context="{'group_by':'request_date:day'}"/>
                 </group>
             </search>
         </field>
     </record>
 
-
-
-
-    <!--_______________Kanban view for dashboard________________________ -->
+    <!-- Kanban View -->
     <record id="view_stationery_request_kanban" model="ir.ui.view">
         <field name="name">stationery.request.kanban</field>
         <field name="model">stationery.request</field>
@@ -179,6 +175,9 @@
             <kanban class="o_kanban_mobile">
                 <field name="name"/>
                 <field name="state"/>
+                <field name="business_unit_id"/>
+                <field name="department_id"/>
+                <field name="requested_by"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click">
@@ -187,6 +186,7 @@
                             </div>
                             <div class="o_kanban_record_subtitle">
                                 <field name="requested_by"/>
+                                <field name="department_id"/>
                             </div>
                             <div>
                                 <field name="state" widget="badge"/>
@@ -198,8 +198,7 @@
         </field>
     </record>
 
-
-    <!-- Action for the menu -->
+    <!-- Action -->
     <record id="action_stationery_request" model="ir.actions.act_window">
         <field name="name">Stationery Requests</field>
         <field name="type">ir.actions.act_window</field>
@@ -214,13 +213,5 @@
             </p>
         </field>
     </record>
-
-
-    <!-- <menuitem id="menu_stationery_requests"
-              name="Requests"
-              action="action_stationery_request"
-              parent="menu_stationary_internal"
-              sequence = "4"/> -->
-
 
 </odoo>

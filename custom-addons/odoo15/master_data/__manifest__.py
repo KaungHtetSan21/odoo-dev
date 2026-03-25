@@ -42,6 +42,7 @@
 
         # Main Views - IMPORTANT: Action views MUST come before menu.xml
         'views/business_unit_views.xml',
+        'views/hr_department_views.xml',
         'views/hr_employee_views.xml',
         'views/product_template_views.xml',      # ← action ရှိတယ် (အရင်ဆုံးဖတ်ရမယ်)
         'views/stationery_product_view.xml',

@@ -4,7 +4,13 @@ class HrDepartment(models.Model):
     _inherit = 'hr.department'
 
     stock_location_id = fields.Many2one('stock.location', string="Department Stock Location")
-
+    
+    # Business Unit နဲ့ ချိတ်မယ်
+    business_unit_id = fields.Many2one(
+        'business.unit',
+        string='Business Unit',
+        help="Business Unit (BU/BR/DIV) that this department belongs to"
+    )
     
     def action_create_stock_location(self):
         """Create stock location for department if not exists"""

@@ -1,21 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Employee Form View - Inherit -->
     <record id="view_employee_form_inherit_business_unit" model="ir.ui.view">
         <field name="name">hr.employee.form.inherit.business.unit</field>
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
 
-            <!-- Insert right after Department field -->
+            <!-- Insert after Department field -->
             <xpath expr="//field[@name='department_id']" position="after">
-                <field name="business_unit_ids"
-                       widget="many2many_tags"
-                       placeholder="Select Business Units"/>
+                <field name="business_unit_id"
+                       string="Business Unit"
+                       options="{'no_create': True}"
+                       placeholder="Select Business Unit"/>
             </xpath>
 
         </field>
     </record>
 
+    <!-- Users Form View - Inherit -->
     <record id="view_users_form_business_unit" model="ir.ui.view">
         <field name="name">res.users.form.business.unit</field>
         <field name="model">res.users</field>
@@ -23,15 +27,13 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='company_ids']" position="after">
                 <group string="Business Unit">
-                    <field name="business_unit_ids"
-                       widget="many2many_tags"
-                       placeholder="BU/BR/Div"/>
-                    
+                    <field name="business_unit_id"
+                           string="Business Unit"
+                           options="{'no_create': True}"
+                           placeholder="Select Business Unit"/>
                 </group>
             </xpath>
         </field>
     </record>
-
-
 
 </odoo>

@@ -171,10 +171,10 @@
                         ]}"/>
 
                 <!-- Custom Statusbar - Add cancelled state -->
-                <field name="approval_state"
+                <!-- <field name="approval_state"
                     widget="statusbar"
                     statusbar_visible="draft,submitted,approved,rejected,cancelled,transferred,done"
-                    attrs="{'invisible':[('is_stationery_transfer','=',False)]}"/>
+                    attrs="{'invisible':[('is_stationery_transfer','=',False)]}"/> -->
 
             </xpath>
 
