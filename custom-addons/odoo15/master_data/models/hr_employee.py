@@ -3,31 +3,38 @@ from odoo import models, fields, api
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
-    # Department ကနေ Business Unit ကို ဆက်ခံယူမယ်
     business_unit_id = fields.Many2one(
         'business.unit',
         string='Business Unit',
-        related='department_id.business_unit_id',
-        readonly=True,
-        store=False
+        domain=lambda self: [('id', 'in', self.env.user.business_unit_ids.ids)],
+        help="Select Business Unit first",
     )
     
-    # လိုချင်ရင် business unit name ကို ပြဖို့
-    business_unit_name = fields.Char(
-        string='Business Unit Name',
-        related='department_id.business_unit_id.name',
-        readonly=True
+    department_id = fields.Many2one(
+        'hr.department',
+        string='Department',
+        domain="[('business_unit_id', '=', business_unit_id)]"
     )
+
+    @api.onchange('business_unit_id')
+    def _onchange_business_unit_id(self):
+        self.department_id = False
+        if self.business_unit_id:
+            return {
+                'domain': {
+                    'department_id': [('business_unit_id', '=', self.business_unit_id.id)]
+                }
+            }
+        return {'domain': {'department_id': []}}
 
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
-
-    # User အတွက်လည်း employee ကနေ ဆက်ခံယူမယ်
-    business_unit_id = fields.Many2one(
+    
+    business_unit_ids = fields.Many2many(
         'business.unit',
-        string='Business Unit',
-        related='employee_id.department_id.business_unit_id',
-        readonly=True,
-        store=False
+        'user_business_unit_rel',
+        'user_id',
+        'business_unit_id',
+        string='Business Units'
     )

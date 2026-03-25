@@ -1,0 +1,12 @@
+<odoo>
+
+    <record id="hr_employee_business_unit_rule" model="ir.rule">
+        <field name="name">Employee by Business Unit</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="domain_force">
+            [('business_unit_id', 'in', user.business_unit_ids.ids)]
+        </field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+</odoo>

@@ -6,7 +6,6 @@ class BusinessUnit(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'business_code' 
 
-
     name = fields.Char(string='Business Name', required=True)
     business_code = fields.Char(string='Business Code', required=True)
     business_type = fields.Selection([
@@ -14,19 +13,33 @@ class BusinessUnit(models.Model):
         ('br', 'BR'),
         ('div', 'DIV'),
     ], tracking=True)
+
     company_id = fields.Many2one(
         'res.company', 'Company',
         default=lambda self: self.env.company,
         index=True)
-    
+
     bu_br_div_loc = fields.Many2one(
         'stock.location',
         string='Location',
         required=True,
         domain=[('usage', '=', 'internal')]
     )
+
     holding_business_id = fields.Many2one(
         'stock.warehouse',
         string="Holding Business",
         required=True
     )
+
+    # ✅ FIX: correct filtering here
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        args = args or []
+
+        user_allowed_ids = self.env.user.business_unit_ids.ids
+
+        if user_allowed_ids:
+            args.append(('id', 'in', user_allowed_ids))
+
+        return super().name_search(name, args, operator, limit)

@@ -26,6 +26,7 @@
     'data': [
         # Security
         'security/ir.model.access.csv',
+        'security/ir_rule.xml',
 
         # Data Files (Sequences, Picking Types)
         'data/stationery_issue_sequence.xml',
@@ -44,6 +45,7 @@
         'views/business_unit_views.xml',
         'views/hr_department_views.xml',
         'views/hr_employee_views.xml',
+        # 'views/res_users_view.xml',
         'views/product_template_views.xml',      # ← action ရှိတယ် (အရင်ဆုံးဖတ်ရမယ်)
         'views/stationery_product_view.xml',
         'views/stationary_request_views.xml',    # ← action ရှိတယ်
